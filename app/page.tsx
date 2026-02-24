@@ -11,15 +11,13 @@ export default function StudioMuhae() {
   const requestRef = useRef<number>(0);
   const xPosRef = useRef(0);
   
-  // 🖱️ 드래그를 위한 상태값
   const [isDragging, setIsDragging] = useState(false);
-  const [dragMoved, setDragMoved] = useState(false); // 드래그 중 클릭 방지용
+  const [dragMoved, setDragMoved] = useState(false);
   const startX = useRef(0);
   const scrollLeftStart = useRef(0);
 
   const projects = [...PROJECTS_DATA, ...PROJECTS_DATA];
 
-  // 1. 자동 무한 루프 (드래그 중이 아닐 때만)
   useEffect(() => {
     const loop = () => {
       if (scrollRef.current && !activeProject && !isDragging) {
@@ -35,14 +33,13 @@ export default function StudioMuhae() {
     return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
   }, [activeProject, isDragging]);
 
-  // 2. 휠 감도 최적화
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY !== 0) {
         e.preventDefault();
-        xPosRef.current += e.deltaY * 1.5; // 감도를 더 부드럽게(1.5)
+        xPosRef.current += e.deltaY * 1.5;
         el.scrollLeft = xPosRef.current;
       }
     };
@@ -50,10 +47,9 @@ export default function StudioMuhae() {
     return () => window.removeEventListener('wheel', onWheel);
   }, []);
 
-  // 3. 강화된 드래그 핸들러 (PC & Mobile 공용)
   const onDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
-    setDragMoved(false); // 드래그 시작 시 초기화
+    setDragMoved(false);
     const pageX = 'touches' in e ? e.touches[0].pageX : e.pageX;
     startX.current = pageX;
     scrollLeftStart.current = scrollRef.current?.scrollLeft || 0;
@@ -61,35 +57,31 @@ export default function StudioMuhae() {
 
   const onDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging || !scrollRef.current) return;
-    
     const pageX = 'touches' in e ? e.touches[0].pageX : e.pageX;
     const dist = pageX - startX.current;
-    
-    // 5픽셀 이상 움직이면 '드래그 중'으로 판단하여 클릭(이동) 방지
     if (Math.abs(dist) > 5) setDragMoved(true);
-
-    // 사용자가 미는 만큼 실시간 이동 (배율 1.8로 쫀득하게)
     scrollRef.current.scrollLeft = scrollLeftStart.current - dist * 1.8;
     xPosRef.current = scrollRef.current.scrollLeft;
   };
 
   const onDragEnd = () => {
     setIsDragging(false);
-    // 약간의 딜레이를 주어 드래그 끝난 직후 클릭 이벤트가 발생하는 것 방지
     setTimeout(() => setDragMoved(false), 50);
   };
 
   return (
     <div className="relative h-screen w-screen bg-black text-white overflow-hidden font-sans select-none touch-none">
       
-      {/* 🏛️ 상단 헤더 */}
-      <header className="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-between items-center">
-        <div className="text-[14px] font-bold tracking-[0.2em]">STUDIO MUHAE</div>
-        <button className="group flex flex-col gap-1.5 items-end cursor-pointer">
-          <span className="w-8 h-[1px] bg-white transition-all group-hover:w-10"></span>
-          <span className="w-5 h-[1px] bg-white transition-all group-hover:w-10"></span>
-          <span className="text-[10px] tracking-widest mt-1 opacity-50 group-hover:opacity-100 transition-opacity uppercase">Menu</span>
-        </button>
+      {/* 🏛️ 상단 헤더 (상세 페이지와 동일한 디자인으로 변경) */}
+      <header className="fixed top-0 left-0 w-full flex justify-between items-center p-8 z-[60] mix-blend-difference invert">
+        <Link href="/" className="cursor-pointer">
+          <img 
+            src="/logo-white.png" 
+            alt="Logo" 
+            className="w-32 md:w-44 h-auto" 
+          />
+        </Link>
+        <div className="text-[12px] font-black uppercase tracking-widest cursor-pointer hover:opacity-50">+ MENU</div>
       </header>
 
       {/* 🎥 배경 비디오 레이어 */}
@@ -110,7 +102,7 @@ export default function StudioMuhae() {
         <div className="absolute inset-0 bg-black/25 z-10" />
       </div>
       
-      {/* 🏛️ 중앙 로고 */}
+      {/* 🏛️ 중앙 로고 및 태그라인 */}
       <main className="fixed inset-0 z-20 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -118,16 +110,24 @@ export default function StudioMuhae() {
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center"
         >
-          <div className="w-[60vw] md:w-[45vw] max-w-[700px]">
-            <img src="/logo-white.png" alt="Logo" className="w-full h-auto object-contain drop-shadow-2xl opacity-95" />
+          {/* 중앙 로고 이미지의 투명도와 크기를 조절하여 배경과 조화롭게 배치 */}
+          <div className="w-[70vw] md:w-[50vw] max-w-[800px]">
+            <img src="/logo-white.png" alt="Center Logo" className="w-full h-auto object-contain drop-shadow-2xl opacity-95" />
           </div>
-          <div className="mt-8 space-y-4 font-serif">
-            <p className="text-[16px] md:text-[22px] italic opacity-80">Surging with infinite waves, defining the creative of tomorrow.</p>
+
+          <div className="mt-10 md:mt-12 space-y-5 font-serif">
+            <div className="space-y-2">
+              <p className="text-[18px] md:text-[24px] italic leading-[1.4] opacity-85 tracking-tight">Surging with infinite waves,</p>
+              <p className="text-[18px] md:text-[24px] italic leading-[1.4] opacity-85 tracking-tight">defining the creative of tomorrow.</p>
+            </div>
+            <p className="font-sans text-[11px] md:text-[12px] tracking-[0.45em] font-bold opacity-60 uppercase flex items-center justify-center gap-2 mt-8">
+              [ STUDIO <span className="text-[14px] md:text-[16px] font-medium mt-[-2px]">舞海</span> (MUHAE) ]
+            </p>
           </div>
         </motion.div>
       </main>
 
-      {/* 🎞️ 드래그 가능한 하단 캐러셀 */}
+      {/* 🎞️ 하단 캐러셀 */}
       <footer className="absolute bottom-0 left-0 w-full z-30 pb-20">
         <div className="w-full border-t border-white/10 mb-8 opacity-20" />
         <div 
@@ -148,7 +148,6 @@ export default function StudioMuhae() {
               onMouseEnter={() => !isDragging && setActiveProject(item)}
               onMouseLeave={() => setActiveProject(null)}
             >
-              {/* 드래그 중에는 클릭(이동) 무시 로직 */}
               <Link 
                 href={`/project/${item.id}`} 
                 onClick={(e) => dragMoved && e.preventDefault()}
@@ -164,6 +163,11 @@ export default function StudioMuhae() {
               </Link>
             </div>
           ))}
+        </div>
+        
+        {/* 🏷️ 하단 카피라이트 */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[9px] font-bold opacity-30 tracking-[0.5em] uppercase whitespace-nowrap">
+          2026© STUDIO MUHAE • KOREA • AI CREATIVE AGENCY
         </div>
       </footer>
 
