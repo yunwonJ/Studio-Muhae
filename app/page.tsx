@@ -3,8 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-// 1. 데이터 창고 불러오기
-import { PROJECTS_DATA } from './data'; 
+// 1. 데이터 창고에서 PROJECTS_DATA와 함께 MAIN_BG_VIDEO도 불러옵니다.
+import { PROJECTS_DATA, MAIN_BG_VIDEO } from './data'; 
 
 export default function StudioMuhae() {
   const [activeProject, setActiveProject] = useState<any>(null);
@@ -28,7 +28,9 @@ export default function StudioMuhae() {
       requestRef.current = requestAnimationFrame(loop);
     };
     requestRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(requestRef.current!);
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
   }, [activeProject]);
 
   // 🖱️ 휠 제어 (유지)
@@ -53,6 +55,7 @@ export default function StudioMuhae() {
       <div className="fixed inset-0 z-0 bg-black">
         <AnimatePresence mode="wait">
           <motion.video
+            // 하단 바에 마우스 올리면 해당 영상, 아니면 메인 배경 영상(MAIN_BG_VIDEO)
             key={activeProject ? activeProject.video : 'default'}
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
@@ -61,8 +64,8 @@ export default function StudioMuhae() {
             autoPlay muted loop playsInline
             className="w-full h-full object-cover"
           >
-            {/* 여기 아래 주소를 Cloudinary 주소로 교체! */}
-            <source src={activeProject ? activeProject.video : 'https://res.cloudinary.com/...여러분의_main_bg_주소'} type="video/mp4" />
+            {/* 👈 수정한 부분: data.ts에 등록한 MAIN_BG_VIDEO 주소를 사용합니다. */}
+            <source src={activeProject ? activeProject.video : MAIN_BG_VIDEO} type="video/mp4" />
           </motion.video>
         </AnimatePresence>
         <div className="absolute inset-0 bg-black/40 z-10" />
