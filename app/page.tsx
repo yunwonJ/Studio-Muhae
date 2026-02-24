@@ -98,7 +98,7 @@ export default function StudioMuhae() {
           </motion.video>
         </AnimatePresence>
         {/* 어두운 오버레이 수치 조절 (40% -> 25%로 낮춤) */}
-        <div className="absolute inset-0 bg-black/25 z-10" />
+        <div className="absolute inset-0 bg-black/15 z-10" />
       </div>
       
       {/* 🏛️ 중앙 로고 및 태그라인 */}
