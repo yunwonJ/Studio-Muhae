@@ -9,7 +9,7 @@ import { PROJECTS_DATA } from './data';
 export default function StudioMuhae() {
   const [activeProject, setActiveProject] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number>(0);
   const xPosRef = useRef(0);
 
   // 2. 창고 데이터를 무한 루프용으로 복제
